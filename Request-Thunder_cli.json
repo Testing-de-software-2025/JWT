@@ -1,0 +1,40 @@
+{
+    "clientName": "Thunder Client",
+    "collectionName": "Users - CRUD",
+    "collectionId": "c4d68471-b8cc-4688-a5f3-4fd900ad4b46",
+    "dateExported": "2024-06-11T02:20:23.136Z",
+    "version": "1.2",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "4034a317-819c-47dd-8266-4f4dcc6b4180",
+            "colId": "c4d68471-b8cc-4688-a5f3-4fd900ad4b46",
+            "containerId": "",
+            "name": "Asignar Permiso a Usuario",
+            "url": "https://x5jh307p-3000.brs.devtunnels.ms/users/2/permissions",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2024-06-11T01:05:22.044Z",
+            "modified": "2024-06-11T01:48:46.150Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"permissionId\":\"1\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "a5c9fbb4-72e5-4ead-a8dc-0a139c900a83",
+            "colId": "c4d68471-b8cc-4688-a5f3-4fd900ad4b46",
+            "containerId": "",
+            "name": "Obtener Permisos",
+            "url": "https://x5jh307p-3000.brs.devtunnels.ms/permissions/3",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2024-06-11T01:05:45.138Z",
+            "modified": "2024-06-11T02:10:55.432Z",
+            "headers": []
+        }
+    ],
+    "ref": "P9HIwB5O2yBGtNavAw6QlzIpsBXhomGCBA23c8MlGibWHmpIM3CL3kSmx6rnjFUWUq7LvCGv87IxrFEKTecQrA"
+}
