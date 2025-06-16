@@ -1,33 +1,47 @@
-import { Body, Param, Post, Get, Put, Delete, Controller } from '@nestjs/common';
-import { PermissionsService } from './permissions.service';
-import { PermissionEntity } from 'src/entities/permission.entity';
-import { DeepPartial } from 'typeorm';
+import {Body, Controller, Delete, Get, Param, Post, Put, UseGuards} from '@nestjs/common';
+import {PermissionsService} from "./permissions.service";
+import {CreatePermissionDto} from "../interfaces/createPermission.dto";
+import {PermissionEntity} from "../entities/permission.entity";
+import {AuthGuard} from "../middlewares/auth.middleware";
+import {Permissions} from "../middlewares/decorators/permissions.decorator";
 
 @Controller('permissions')
 export class PermissionsController {
-    constructor(private permissionsService: PermissionsService) {}
+    constructor(private readonly permissionsService: PermissionsService) {}
+
+    @UseGuards(AuthGuard)
+    @Permissions(['permission_create'])
     @Post()
-    async createPermissions( @Body() bodyCreatePermissions: DeepPartial<PermissionEntity>): Promise<PermissionEntity> {
-        return await this.permissionsService.createPermissions(bodyCreatePermissions);
+    create(@Body() createPermissionDto: CreatePermissionDto): Promise<PermissionEntity> {
+        return this.permissionsService.create(createPermissionDto);
     }
 
-    @Get()
-    async findPermissions(): Promise<PermissionEntity[]>{
-        return await this.permissionsService.findPermissions();
+    @UseGuards(AuthGuard)
+    @Permissions(['permission_reader'])
+    @Get('all')
+    findAll(): Promise<PermissionEntity[]> {
+        return this.permissionsService.findAll();
     }
 
+    @UseGuards(AuthGuard)
+    @Permissions(['permission_editor'])
     @Put(':id')
-        async updatePermissionById(@Param('id') id: number, @Body() bodyUpdatePermissions: DeepPartial<PermissionEntity>): Promise<PermissionEntity> {
-            return await this.permissionsService.updatePermissionById(id, bodyUpdatePermissions);
+    update(@Param('id') id: number, @Body() createPermissionDto: CreatePermissionDto): Promise<PermissionEntity> {
+        return this.permissionsService.update(id, createPermissionDto);
     }
 
+    @UseGuards(AuthGuard)
+    @Permissions(['permission_delete'])
     @Delete(':id')
-        async deletePermissionById(@Param('id') id: number): Promise<PermissionEntity> {
-            return await this.permissionsService.deletePermissionById(id);
+    delete(@Param('id') id: number): Promise<{ message: string }> {
+        return this.permissionsService.delete(id);
     }
 
+    @UseGuards(AuthGuard)
+    @Permissions(['permission_reader'])
     @Get(':id')
-        async findPermissionById(@Param('id') id: number): Promise<PermissionEntity> {
-            return await this.permissionsService.findPermissionById(id);
+    findById(@Param('id') id: number): Promise<PermissionEntity> {
+        return this.permissionsService.findById(id);
     }
+
 }

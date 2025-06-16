@@ -1,36 +1,60 @@
-import { Body, Param, Post, Get, Put, Delete, Controller  } from '@nestjs/common';
-import { RolesService } from './roles.service';
-import { DeepPartial } from 'typeorm';
-import { RoleEntity } from 'src/entities/role.entity';
+import {Body, Controller, Delete, Get, Param, Post, Put, UseGuards} from '@nestjs/common';
+import {RolesService} from "./roles.service";
+import {CreateRoleDto} from "../interfaces/createRole.dto";
+import {RoleEntity} from "../entities/role.entity";
+import {AuthGuard} from "../middlewares/auth.middleware";
+import {AssignPermissionsDto} from "../interfaces/assignPermissions.dto";
+import {Permissions} from "../middlewares/decorators/permissions.decorator";
 
 @Controller('roles')
-export default class RolesController {
-    constructor(private rolesService: RolesService) {}
-    
-    @Post(':id/permissions')
-    async assignPermissionToRole(@Param('id') idRole: number, @Body() body: { permissionId: number }): Promise<RoleEntity> {
-        return await this.rolesService.assignPermissionToRole(idRole, body);
-    }
+export class RolesController {
+    constructor(private readonly rolesService: RolesService) {}
 
-    @Get()
-    async findRoles() {
-        return await this.rolesService.findRoles();
-    }
-
+    @UseGuards(AuthGuard)
+    @Permissions(['create_role'])
     @Post()
-    async createRoles(@Body() bodyCreateRoles: DeepPartial<RoleEntity>): Promise<RoleEntity> {
-        return await this.rolesService.createRoles(bodyCreateRoles);
+    create(@Body() createRoleDto: CreateRoleDto): Promise<RoleEntity> {
+        return this.rolesService.create(createRoleDto);
     }
 
-    @Delete(':id')
-    async deleteRole(@Param('id') id: number): Promise<RoleEntity> {
-        return await this.rolesService.deleteRole(id);
+    @UseGuards(AuthGuard)
+    @Permissions(['reader_role'])
+    @Get('all')
+    findAll(): Promise<RoleEntity[]> {
+        return this.rolesService.findAll();
     }
-    
+
+    @UseGuards(AuthGuard)
+    @Permissions(['reader_role'])
+    @Get(':id')
+    findById(@Param('id') id: number): Promise<RoleEntity> {
+        return this.rolesService.findById(id);
+    }
+
+    @UseGuards(AuthGuard)
+    @Permissions(['role_editor'])
     @Put(':id')
-    async updateRole(@Param('id') id: number, @Body() bodyUpdateRole: DeepPartial<RoleEntity>): Promise<RoleEntity>{
-        return await this.rolesService.updateRole(id, bodyUpdateRole);
+    update(@Param('id') id: number, @Body() createRoleDto: CreateRoleDto): Promise<RoleEntity> {
+        return this.rolesService.update(id, createRoleDto);
     }
 
-    
+    @UseGuards(AuthGuard)
+    @Permissions(['role_delete'])
+    @Delete(':id')
+    delete(@Param('id') id: number): Promise<{ message: string }> {
+        return this.rolesService.delete(id);
+    }
+
+    @Post(':id/assign-permissions')
+    @Permissions(['permission_role_assignment'])
+    assignPermissions(@Param('id') id: number, @Body() assignPermissionDto: AssignPermissionsDto ): Promise<RoleEntity> {
+        return this.rolesService.assignPermissions(id, assignPermissionDto);
+    }
+
+    @Delete(':id/remove-permission/:permissionId')
+    @Permissions(['permission_role_assignment'])
+    removePermission(@Param('id') id: number, @Param('permissionId') permissionId: number): Promise<{message: string}> {
+        return this.rolesService.removePermission(id, permissionId);
+    }
+
 }

@@ -1,34 +1,23 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, BaseEntity } from 'typeorm';
 import { UserI } from '../interfaces/user.interface';
-import { RoleEntity } from './role.entity';
-import { PermissionEntity } from './permission.entity';
+import {BaseEntity, Column, Entity, Index, JoinTable, ManyToMany, PrimaryGeneratedColumn} from 'typeorm';
+import {RoleEntity} from "./role.entity";
+import {PermissionEntity} from "./permission.entity";
 
 @Entity('users')
 export class UserEntity extends BaseEntity implements UserI {
   @PrimaryGeneratedColumn()
   id: number;
+  @Index({unique:true})
   @Column()
   email: string;
   @Column()
   password: string;
-  @Column()
-  firstName: string;
-  @Column()
-  lastName: string;
 
-  @ManyToMany(() => RoleEntity, role => role.users , { eager: true })
+  @ManyToMany(() => RoleEntity, role => role.users)
   @JoinTable()
-  roles: RoleEntity[];
+    roles: RoleEntity[];
 
-  @ManyToMany(() => PermissionEntity, permission => permission.users, { eager: true })
-  @JoinTable()
-  permissions: PermissionEntity[];
-
-
-  get permissionCodes() {
-    if (!this.permissions) {
-      return [];
-    }
-    return this.permissions.map(permission => permission.name);
+  get permissionCodes(): string[] {
+    return this.roles?.flatMap(role => role.permissions.map(permission => permission.code)) || [];
   }
 }

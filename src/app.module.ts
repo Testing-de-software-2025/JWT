@@ -1,22 +1,22 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { entities } from './entities';
-import { JwtModule } from './jwt/jwt.module';
-import { AuthModule } from './auth/auth.module';
-import { PermissionsModule } from './permissions/permissions.module';
-import { RolesModule } from './roles/roles.module';
-import { UsersModule } from './users/users.module';
-import { LoginModule } from './login/login.module';
-import { RefreshModule } from './refresh/refresh.module';
+import { AuthGuard } from './middlewares/auth.middleware';
+import { JwtService } from './jwt/jwt.service';
+import { UsersController } from './users/users.controller';
+import { UsersService } from './users/users.service';
+import { PermissionsController } from './permissions/permissions.controller';
+import { RolesController } from './roles/roles.controller';
+import { RolesService } from './roles/roles.service';
+import { PermissionsService } from './permissions/permissions.service';
 
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      database: 'authdb',
+      database: 'authdb2',
       host: 'localhost',
       port: 5432,
       username: 'postgres',
@@ -24,15 +24,9 @@ import { RefreshModule } from './refresh/refresh.module';
       entities: entities,
       synchronize: true,
     }),
-    JwtModule,
-    AuthModule,
-    PermissionsModule,
-    RolesModule,
-    UsersModule,
-    LoginModule, 
-    RefreshModule
+    TypeOrmModule.forFeature(entities),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, UsersController, PermissionsController, RolesController],
+  providers: [UsersService, JwtService, AuthGuard, RolesService, PermissionsService],
 })
 export class AppModule {}

@@ -1,10 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { sign, verify } from 'jsonwebtoken';
+import * as dayjs from 'dayjs';
 import { Payload } from 'src/interfaces/payload';
-import * as moment from 'moment';
-
 @Injectable()
 export class JwtService {
+  // config.ts
   config = {
     auth: {
       secret: 'authSecret',
@@ -15,7 +15,6 @@ export class JwtService {
       expiresIn: '1d',
     },
   };
-
   generateToken(
     payload: { email: string },
     type: 'refresh' | 'auth' = 'auth',
@@ -25,29 +24,24 @@ export class JwtService {
     });
   }
 
-  refreshToken(refreshToken: string) {
+  refreshToken(refreshToken: string):{accessToken:string,refreshToken:string} {
     try {
-      const payload = verify(refreshToken, this.config.refresh.secret) as Payload;
-      const currentTime = Math.floor(Date.now() / 1000);
-      const timeToExpire = (payload.exp - currentTime) / 60;
-      if (timeToExpire < 20) { // Si el token está a menos de 20 minutos de expirar
-        return {
-          accessToken: this.generateToken({ email: payload.email }),
-          refreshToken: this.generateToken({ email: payload.email }, 'refresh'),
-          expirationTime: moment().add(10, 'minutes').toDate(),
-        };
-      } else {
-        return {
-          accessToken: this.generateToken({ email: payload.email }),
-          expirationTime: moment().add(10, 'minutes').toDate(),
-        };
-      }
+      const payload = this.getPayload(refreshToken,'refresh')
+      // Obtiene el tiempo restante en minutos hasta la expiración
+      const timeToExpire = dayjs.unix(payload.exp).diff(dayjs(), 'minute');
+      return {
+        accessToken: this.generateToken({ email: payload.email }),
+        refreshToken:
+          timeToExpire < 20
+            ? this.generateToken({ email: payload.email }, 'refresh')
+            : refreshToken
+      };
     } catch (error) {
       throw new UnauthorizedException();
     }
   }
 
-  getPayload(token: string, type: 'refresh' | 'auth' = 'auth'): Payload{
-    return  verify(token, this.config[type].secret) as Payload;
-  }  
+  getPayload(token: string, type: 'refresh' | 'auth' = 'auth'): Payload {
+    return verify(token, this.config[type].secret);
+  }
 }

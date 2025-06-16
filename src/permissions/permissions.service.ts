@@ -1,53 +1,48 @@
-import { PermissionEntity } from 'src/entities/permission.entity';
-import { PermissionsController } from './permissions.controller';
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DeepPartial} from 'typeorm';
-import { HttpException } from '@nestjs/common/exceptions/http.exception';
+import {Injectable, NotFoundException} from '@nestjs/common';
+import {Repository} from "typeorm";
+import {PermissionEntity} from "../entities/permission.entity";
+import {InjectRepository} from "@nestjs/typeorm";
+import {CreatePermissionDto} from "../interfaces/createPermission.dto";
+
 @Injectable()
 export class PermissionsService {
-    constructor(@InjectRepository(PermissionEntity)
-        private repository: Repository<PermissionEntity>,
-    ){}
+    private permissionRepository: Repository<PermissionEntity>;
 
-    async createPermissions(permission: DeepPartial<PermissionEntity>): Promise<PermissionEntity> {
-        try {
-            return await this.repository.save(permission);
-        } catch (error) {
-            throw new HttpException('Create product error', 500)
-        }
-    }
-    
-    async findPermissions(){
-        try {            
-            return await this.repository.find();
-        } catch (error) {
-            throw new HttpException('Find all products error', 500)
-        } 
+    constructor(
+        @InjectRepository(PermissionEntity)
+        permissionRepository: Repository<PermissionEntity>,
+    ) {
+        this.permissionRepository = permissionRepository;
     }
 
-    async findPermissionById(id: number): Promise<PermissionEntity> {
-        const permission = await this.repository.findOne({where:{id}});
-        if (!permission) {
-            throw new NotFoundException(`Permission with id ${id} not found`);
+    async create (createPermissionDto: CreatePermissionDto): Promise<PermissionEntity> {
+        const permission = this.permissionRepository.create(createPermissionDto);
+        return this.permissionRepository.save(permission);
+    }
+
+    async findAll(): Promise<PermissionEntity[]> {
+        return this.permissionRepository.find();
+    }
+
+    async findById(id: number): Promise<PermissionEntity> {
+        const permission = await this.permissionRepository.findOne({where: {id}});
+
+        if(!permission) {
+            throw new NotFoundException('El permiso no existe');
         }
+
         return permission;
     }
 
-    async updatePermissionById(id: number, permission: DeepPartial<PermissionEntity>): Promise<PermissionEntity> {
-        const query = this.repository.createQueryBuilder('permission')
-            .where('permission.id = :id', { id });
-        const permissionActual = await query.getOne();
-        this.repository.merge(permissionActual, permission);
-        if (!permissionActual) {
-            throw new NotFoundException(`Permission with id ${id} not found`);
-        }
-        return await this.repository.save(permissionActual);
+    async update(id: number, createPermissionDto: CreatePermissionDto): Promise<PermissionEntity> {
+        const permission = await this.findById(id);
+        this.permissionRepository.merge(permission, createPermissionDto);
+        return this.permissionRepository.save(permission);
     }
-    async deletePermissionById(id: number): Promise <PermissionEntity> {
-        const permissionRemove = await this.repository.findOneBy({
-            id: id
-        })
-        return await this.repository.remove(permissionRemove);
+
+    async delete(id: number): Promise<{ message: string }> {
+        const permission = await this.findById(id);
+        await this.permissionRepository.remove(permission);
+        return { message: 'Permiso eliminado' };
     }
 }
