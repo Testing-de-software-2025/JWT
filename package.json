@@ -27,6 +27,7 @@
     "@nestjs/typeorm": "^10.0.2",
     "bcrypt": "^5.1.1",
     "class": "^0.1.4",
+    "class-validator": "^0.14.2",
     "dayjs": "^1.11.13",
     "jsonwebtoken": "^9.0.2",
     "nest": "^0.1.6",

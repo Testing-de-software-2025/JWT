@@ -16,9 +16,9 @@ import { PermissionsService } from './permissions/permissions.service';
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      database: 'authdb2',
+      database: 'authdb',
       host: 'localhost',
-      port: 5432,
+      port: 5433,
       username: 'postgres',
       password: 'postgres',
       entities: entities,
