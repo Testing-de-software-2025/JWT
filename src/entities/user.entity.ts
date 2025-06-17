@@ -18,6 +18,6 @@ export class UserEntity extends BaseEntity implements UserI {
     roles: RoleEntity[];
 
   get permissionCodes(): string[] {
-    return this.roles?.flatMap(role => role.permissions.map(permission => permission.code)) || [];
+    return this.roles?.flatMap(role => role.permissions.map(permission => permission.name)) || [];
   }
 }
