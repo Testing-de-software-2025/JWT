@@ -1,12 +1,11 @@
 import {
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Request } from 'express';
-import { UserEntity } from 'src/entities/user.entity';
 import { RequestWithUser } from 'src/interfaces/request-user';
 import { JwtService } from 'src/jwt/jwt.service';
 import { UsersService } from 'src/users/users.service';
@@ -23,6 +22,7 @@ export class AuthGuard implements CanActivate {
     try {
       const request: RequestWithUser = context.switchToHttp().getRequest();
       const token = request.headers.authorization.replace('Bearer ','');
+      console.log('Token:', token);
       if (token == null) {
         throw new UnauthorizedException('El token no existe');
       }
@@ -48,7 +48,13 @@ export class AuthGuard implements CanActivate {
       return true;
 
     } catch (error) {
-      throw new UnauthorizedException(error?.message);
+      if (error instanceof ForbiddenException) {
+        throw new ForbiddenException(error.message);
+      } else if (error instanceof UnauthorizedException) {
+        throw new UnauthorizedException(error.message);
+      } else {
+        throw new UnauthorizedException('An unexpected error occurred.');
+      }
     }
   }
 }

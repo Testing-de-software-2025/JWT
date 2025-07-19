@@ -11,21 +11,21 @@ export class RolesController {
     constructor(private readonly rolesService: RolesService) {}
 
     @UseGuards(AuthGuard)
-    @Permissions(['create_role'])
+    @Permissions(['role_create'])
     @Post()
     create(@Body() createRoleDto: CreateRoleDto): Promise<RoleEntity> {
         return this.rolesService.create(createRoleDto);
     }
 
     @UseGuards(AuthGuard)
-    @Permissions(['reader_role'])
+    @Permissions(['role_reader'])
     @Get('all')
     findAll(): Promise<RoleEntity[]> {
         return this.rolesService.findAll();
     }
 
     @UseGuards(AuthGuard)
-    @Permissions(['reader_role'])
+    @Permissions(['role_reader'])
     @Get(':id')
     findById(@Param('id') id: number): Promise<RoleEntity> {
         return this.rolesService.findById(id);

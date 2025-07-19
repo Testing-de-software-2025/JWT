@@ -43,5 +43,4 @@ export class PermissionsController {
     findById(@Param('id') id: number): Promise<PermissionEntity> {
         return this.permissionsService.findById(id);
     }
-
 }

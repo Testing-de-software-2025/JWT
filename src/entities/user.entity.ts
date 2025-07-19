@@ -7,9 +7,11 @@ import {PermissionEntity} from "./permission.entity";
 export class UserEntity extends BaseEntity implements UserI {
   @PrimaryGeneratedColumn()
   id: number;
+
   @Index({unique:true})
   @Column()
   email: string;
+  
   @Column()
   password: string;
 
