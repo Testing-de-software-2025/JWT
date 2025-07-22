@@ -1,3 +1,4 @@
+// Guard de autenticación y autorización
 import {
   CanActivate,
   ExecutionContext,
@@ -16,33 +17,41 @@ export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private usersService: UsersService,
-    private reflector:Reflector
+    private reflector: Reflector
   ) {}
+
+  // Método principal que verifica si el usuario puede acceder a la ruta
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
+      // Obtiene el request HTTP
       const request: RequestWithUser = context.switchToHttp().getRequest();
-      const token = request.headers.authorization.replace('Bearer ','');
+      // Extrae el token JWT de la cabecera Authorization
+      const token = request.headers.authorization.replace('Bearer ', '');
       console.log('Token:', token);
       if (token == null) {
         throw new UnauthorizedException('El token no existe');
       }
+      // Obtiene el payload del token
       const payload = this.jwtService.getPayload(token);
+      // Busca el usuario por email
       const user = await this.usersService.findByEmail(payload.email);
+      // Asigna el usuario al request
       request.user = user;
 
-      
+      // Obtiene los permisos requeridos por la ruta (decorador)
       const permissions = this.reflector.get(Permissions, context.getHandler());
 
+      // Si no hay permisos requeridos, permite el acceso
       if (!permissions || permissions.length === 0) {
         return true;
       }
 
+      // Verifica que el usuario tenga todos los permisos requeridos
       const userPermissions = user.permissionCodes;
-      
       const hasAllPermissions = permissions.every((permission) => userPermissions.includes(permission));
 
-      if (!hasAllPermissions){
-        throw new UnauthorizedException("Insufficent permissions");
+      if (!hasAllPermissions) {
+        throw new UnauthorizedException("Insufficient permissions");
       }
 
       return true;

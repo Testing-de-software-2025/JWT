@@ -1,3 +1,4 @@
+// Controlador para la gestión de usuarios, login, registro y asignación de roles
 import {
   Body,
   Controller, Delete,
@@ -13,14 +14,15 @@ import { RegisterDTO } from '../interfaces/register.dto';
 import { Request } from 'express';
 import { AuthGuard } from '../middlewares/auth.middleware';
 import { RequestWithUser } from 'src/interfaces/request-user';
-import {AssignRoleDto} from "../interfaces/assignRole.dto";
-import {UserEntity} from "../entities/user.entity";
-import {Permissions} from "../middlewares/decorators/permissions.decorator";
+import { AssignRoleDto } from "../interfaces/assignRole.dto";
+import { UserEntity } from "../entities/user.entity";
+import { Permissions } from "../middlewares/decorators/permissions.decorator";
 
 @Controller('')
 export class UsersController {
   constructor(private service: UsersService) {}
 
+  // Obtiene el usuario autenticado (requiere JWT)
   @UseGuards(AuthGuard)
   @Get('me')
   me(@Req() req: RequestWithUser) {
@@ -29,16 +31,19 @@ export class UsersController {
     };
   }
 
+  // Login de usuario, retorna accessToken y refreshToken
   @Post('login')
   login(@Body() body: LoginDTO) {
     return this.service.login(body);
   }
 
+  // Registro de usuario
   @Post('register')
   register(@Body() body: RegisterDTO) {
     return this.service.register(body);
   }
 
+  // Verifica si el usuario tiene un permiso específico
   @UseGuards(AuthGuard)
   @Get('can-do/:permission')
   canDo(
@@ -48,6 +53,7 @@ export class UsersController {
     return this.service.canDo(request.user, permission);
   }
 
+  // Refresca el accessToken usando el refreshToken
   @Get('refresh-token')
   refreshToken(@Req() request: Request) {
     return this.service.refreshToken(
@@ -55,6 +61,7 @@ export class UsersController {
     );
   }
 
+  // Asigna roles a un usuario (requiere permiso 'user_role_assignment')
   @UseGuards(AuthGuard)
   @Permissions(['user_role_assignment'])
   @Post(':id/assign-roles')

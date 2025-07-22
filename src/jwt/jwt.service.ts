@@ -1,20 +1,24 @@
+// Servicio para la generación y validación de tokens JWT
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { sign, verify } from 'jsonwebtoken';
 import * as dayjs from 'dayjs';
 import { Payload } from 'src/interfaces/payload';
+
 @Injectable()
 export class JwtService {
-  // config.ts
+  // Configuración de los secretos y expiración de los tokens
   config = {
     auth: {
-      secret: 'authSecret',
-      expiresIn: '15m',
+      secret: 'authSecret', // Secreto para el token de autenticación
+      expiresIn: '15m',     // Expira en 15 minutos
     },
     refresh: {
-      secret: 'refreshSecret',
-      expiresIn: '1d',
+      secret: 'refreshSecret', // Secreto para el refresh token
+      expiresIn: '1d',         // Expira en 1 día
     },
   };
+
+  // Genera un token JWT (auth o refresh)
   generateToken(
     payload: { email: string },
     type: 'refresh' | 'auth' = 'auth',
@@ -24,9 +28,10 @@ export class JwtService {
     });
   }
 
-  refreshToken(refreshToken: string):{accessToken:string,refreshToken:string} {
+  // Renueva el refresh token si está por expirar
+  refreshToken(refreshToken: string): { accessToken: string, refreshToken: string } {
     try {
-      const payload = this.getPayload(refreshToken,'refresh')
+      const payload = this.getPayload(refreshToken, 'refresh');
       // Obtiene el tiempo restante en minutos hasta la expiración
       const timeToExpire = dayjs.unix(payload.exp).diff(dayjs(), 'minute');
       return {
@@ -41,6 +46,7 @@ export class JwtService {
     }
   }
 
+  // Obtiene el payload del token JWT
   getPayload(token: string, type: 'refresh' | 'auth' = 'auth'): Payload {
     return verify(token, this.config[type].secret);
   }

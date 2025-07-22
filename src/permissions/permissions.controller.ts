@@ -1,14 +1,16 @@
-import {Body, Controller, Delete, Get, Param, Post, Put, UseGuards} from '@nestjs/common';
-import {PermissionsService} from "./permissions.service";
-import {CreatePermissionDto} from "../interfaces/createPermission.dto";
-import {PermissionEntity} from "../entities/permission.entity";
-import {AuthGuard} from "../middlewares/auth.middleware";
-import {Permissions} from "../middlewares/decorators/permissions.decorator";
+// Controlador para la gestión de permisos
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { PermissionsService } from "./permissions.service";
+import { CreatePermissionDto } from "../interfaces/createPermission.dto";
+import { PermissionEntity } from "../entities/permission.entity";
+import { AuthGuard } from "../middlewares/auth.middleware";
+import { Permissions } from "../middlewares/decorators/permissions.decorator";
 
 @Controller('permissions')
 export class PermissionsController {
     constructor(private readonly permissionsService: PermissionsService) {}
 
+    // Crea un nuevo permiso (requiere permiso 'permission_create')
     @UseGuards(AuthGuard)
     @Permissions(['permission_create'])
     @Post()
@@ -16,6 +18,7 @@ export class PermissionsController {
         return this.permissionsService.create(createPermissionDto);
     }
 
+    // Obtiene todos los permisos (requiere permiso 'permission_reader')
     @UseGuards(AuthGuard)
     @Permissions(['permission_reader'])
     @Get('all')
@@ -23,6 +26,7 @@ export class PermissionsController {
         return this.permissionsService.findAll();
     }
 
+    // Actualiza un permiso por ID (requiere permiso 'permission_editor')
     @UseGuards(AuthGuard)
     @Permissions(['permission_editor'])
     @Put(':id')
@@ -30,6 +34,7 @@ export class PermissionsController {
         return this.permissionsService.update(id, createPermissionDto);
     }
 
+    // Elimina un permiso por ID (requiere permiso 'permission_delete')
     @UseGuards(AuthGuard)
     @Permissions(['permission_delete'])
     @Delete(':id')
@@ -37,6 +42,7 @@ export class PermissionsController {
         return this.permissionsService.delete(id);
     }
 
+    // Obtiene un permiso por ID (requiere permiso 'permission_reader')
     @UseGuards(AuthGuard)
     @Permissions(['permission_reader'])
     @Get(':id')

@@ -1,3 +1,4 @@
+// Servicio para la gestión de usuarios, login, registro y permisos
 import {
   HttpException,
   Injectable, NotFoundException,
@@ -10,18 +11,22 @@ import { UserEntity } from '../entities/user.entity';
 import { hashSync, compareSync } from 'bcrypt';
 import { JwtService } from 'src/jwt/jwt.service';
 import * as dayjs from 'dayjs';
-import {AssignRoleDto} from "../interfaces/assignRole.dto";
-import {RolesService} from "../roles/roles.service";
-import {RequestWithUser} from "../interfaces/request-user";
+import { AssignRoleDto } from "../interfaces/assignRole.dto";
+import { RolesService } from "../roles/roles.service";
+import { RequestWithUser } from "../interfaces/request-user";
 
 @Injectable()
 export class UsersService {
+  // Repositorio de usuarios
   repository = UserEntity;
   constructor(private jwtService: JwtService, private readonly rolesService: RolesService) {}
 
+  // Refresca el accessToken usando el refreshToken
   async refreshToken(refreshToken: string) {
     return this.jwtService.refreshToken(refreshToken);
   }
+
+  // Verifica si el usuario tiene un permiso específico
   async canDo(user: UserI, permission: string): Promise<boolean> {
     const result = user.permissionCodes.includes(permission);
     if (!result) {
@@ -30,11 +35,12 @@ export class UsersService {
     return true;
   }
 
+  // Registro de usuario: crea y guarda el usuario en la base de datos
   async register(body: RegisterDTO) {
     try {
       const user = new UserEntity();
       Object.assign(user, body);
-      user.password = hashSync(user.password, 10);
+      user.password = hashSync(user.password, 10); // Encripta la contraseña
       await this.repository.save(user);
       return { status: 'created' };
     } catch (error) {
@@ -42,6 +48,7 @@ export class UsersService {
     }
   }
 
+  // Login de usuario: valida credenciales y retorna tokens
   async login(body: LoginDTO) {
     const user = await this.findByEmail(body.email);
     if (user == null) {
