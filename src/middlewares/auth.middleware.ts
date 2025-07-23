@@ -26,9 +26,9 @@ export class AuthGuard implements CanActivate {
       // Obtiene el request HTTP
       const request: RequestWithUser = context.switchToHttp().getRequest();
       // Extrae el token JWT de la cabecera Authorization
-      const token = request.headers.authorization.replace('Bearer ', '');
+      const token = request.headers.authorization?.replace('Bearer ', '');
       console.log('Token:', token);
-      if (token == null) {
+      if (!token) {
         throw new UnauthorizedException('El token no existe');
       }
       // Obtiene el payload del token
@@ -46,8 +46,15 @@ export class AuthGuard implements CanActivate {
         return true;
       }
 
-      // Verifica que el usuario tenga todos los permisos requeridos
-      const userPermissions = user.permissionCodes;
+      // DEBUG: Mostrar los permisos del usuario y los requeridos
+      console.log('Permisos requeridos:', permissions);
+      console.log('Permisos del usuario:', user.permissionCodes);
+
+      // Validación robusta de permisos
+      if (!user.permissionCodes || !Array.isArray(user.permissionCodes)) {
+        throw new UnauthorizedException('El usuario no tiene permisos asignados correctamente');
+      }
+      const userPermissions = user.permissionCodes.map((p: any) => typeof p === 'string' ? p : (p && p.name ? p.name : ''));
       const hasAllPermissions = permissions.every((permission) => userPermissions.includes(permission));
 
       if (!hasAllPermissions) {
