@@ -37,7 +37,7 @@ export class JwtService {
       return {
         accessToken: this.generateToken({ email: payload.email }),
         refreshToken:
-          timeToExpire < 20
+          timeToExpire < 5
             ? this.generateToken({ email: payload.email }, 'refresh')
             : refreshToken
       };
