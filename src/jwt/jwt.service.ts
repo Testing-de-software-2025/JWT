@@ -50,4 +50,10 @@ export class JwtService {
   getPayload(token: string, type: 'refresh' | 'auth' = 'auth'): Payload {
     return verify(token, this.config[type].secret);
   }
+
+  
+  // Verifica y decodifica un token JWT
+  verifyToken(token: string, type: 'refresh' | 'auth' = 'auth'): Payload {
+    return this.getPayload(token, type);
+  }
 }
