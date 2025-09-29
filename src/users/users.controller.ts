@@ -17,6 +17,7 @@ import { RequestWithUser } from 'src/interfaces/request-user';
 import { AssignRoleDto } from "../interfaces/assignRole.dto";
 import { UserEntity } from "../entities/user.entity";
 import { Permissions } from "../middlewares/decorators/permissions.decorator";
+"TESTING"
 
 @Controller('')
 export class UsersController {
