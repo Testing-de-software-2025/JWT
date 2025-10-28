@@ -21,11 +21,12 @@ describe('Permissions integration (e2e)', () => {
     httpServer = app.getHttpServer();
     dataSource = app.get(DataSource);
 
-    await dataSource.getRepository(PermissionEntity).clear();
+  // Limpiar usando TRUNCATE CASCADE para Postgres y reiniciar identities
+  await dataSource.query('TRUNCATE TABLE "permissions" RESTART IDENTITY CASCADE');
   }, 20000);
 
   afterAll(async () => {
-    if (dataSource) await dataSource.getRepository(PermissionEntity).clear();
+    if (dataSource) await dataSource.query('TRUNCATE TABLE "permissions" RESTART IDENTITY CASCADE');
     await app.close();
   });
 

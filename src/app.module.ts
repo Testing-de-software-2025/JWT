@@ -30,10 +30,10 @@ import { RolesService } from './roles/roles.service';
       // Habilita configuración vía variables de entorno para las pruebas e2e
       type: 'postgres',
       host: process.env.DB_HOST || 'localhost',
-      port: Number(process.env.DB_PORT) || 5434,
+      port: Number(process.env.DB_PORT) || 5433,
       username: process.env.DB_USER || 'postgres',
       password: process.env.DB_PASS || 'postgres',
-      database: process.env.DB_NAME || 'jwt',
+      database: process.env.DB_NAME || 'authdb',
       entities: entities,
       synchronize: true,
     }),

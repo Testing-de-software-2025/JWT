@@ -24,17 +24,13 @@ describe('Auth integration (e2e)', () => {
     // Obtener el DataSource inicializado por TypeORM
     dataSource = app.get(DataSource);
 
-    // Asegurar DB limpia antes de ejecutar
-    await dataSource.getRepository(UserEntity).clear();
-    await dataSource.getRepository(RoleEntity).clear();
-    await dataSource.getRepository(PermissionEntity).clear();
+  // Asegurar DB limpia antes de ejecutar (usar TRUNCATE con CASCADE para Postgres)
+  await dataSource.query('TRUNCATE TABLE "users", "roles", "permissions" RESTART IDENTITY CASCADE');
   }, 20000);
 
   afterAll(async () => {
     if (dataSource) {
-      await dataSource.getRepository(UserEntity).clear();
-      await dataSource.getRepository(RoleEntity).clear();
-      await dataSource.getRepository(PermissionEntity).clear();
+      await dataSource.query('TRUNCATE TABLE "users", "roles", "permissions" RESTART IDENTITY CASCADE');
     }
     await app.close();
   });

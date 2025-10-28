@@ -20,8 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "test:e2e:up": "docker-compose -f docker-compose.test.yml up -d",
     "test:e2e:down": "docker-compose -f docker-compose.test.yml down",
-    "test:e2e:ci": "cross-env DB_HOST=localhost DB_PORT=5432 DB_USER=postgres DB_PASS=postgres DB_NAME=jwt2 npm run test:e2e"
-    ,
+    "test:e2e:ci": "cross-env DB_HOST=localhost DB_PORT=5432 DB_USER=postgres DB_PASS=postgres DB_NAME=jwt2 npm run test:e2e",
     "test:integration": "jest --config ./test/jest-integration.json",
     "test:integration:ci": "cross-env DB_HOST=localhost DB_PORT=5432 DB_USER=postgres DB_PASS=postgres DB_NAME=jwt2 npm run test:integration"
   },
@@ -57,6 +56,7 @@
     "@types/supertest": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
+    "cross-env": "^7.0.3",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
@@ -68,8 +68,7 @@
     "ts-loader": "^9.4.3",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.1.3",
-    "cross-env": "^7.0.3"
+    "typescript": "^5.1.3"
   },
   "jest": {
     "moduleFileExtensions": [
