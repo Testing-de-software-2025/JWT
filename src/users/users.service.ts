@@ -97,7 +97,7 @@ export class UsersService {
   }
 
   async findById(id: number): Promise<UserEntity> {
-    const user = this.repository.findOne({where: {id}, relations: ["roles","roles.permissions"], select: ["id", "email", "roles"]});
+    const user = await this.repository.findOne({where: {id}, relations: ["roles","roles.permissions"], select: ["id", "email", "roles"]});
     if(!user) {
       throw new NotFoundException('El usuario no existe');
     }

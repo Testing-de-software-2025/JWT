@@ -27,14 +27,15 @@ import { RolesService } from './roles/roles.service';
     // Configuración de la base de datos PostgreSQL
     // 'synchronize: true' permite crear las tablas automáticamente en desarrollo
     TypeOrmModule.forRoot({
+      // Habilita configuración vía variables de entorno para las pruebas e2e
       type: 'postgres',
-      database: 'jwt', // Nombre de la base de datos
-      host: 'localhost', // Host local
-      port: 5434, // Puerto de conexión
-      username: 'postgres', // Usuario de la base de datos
-      password: 'postgres', // Contraseña
-      entities: entities, // Entidades mapeadas
-      synchronize: true, // Sincroniza entidades con la base de datos
+      host: process.env.DB_HOST || 'localhost',
+      port: Number(process.env.DB_PORT) || 5434,
+      username: process.env.DB_USER || 'postgres',
+      password: process.env.DB_PASS || 'postgres',
+      database: process.env.DB_NAME || 'jwt',
+      entities: entities,
+      synchronize: true,
     }),
     // Importa las entidades para su uso en los repositorios
     TypeOrmModule.forFeature(entities),

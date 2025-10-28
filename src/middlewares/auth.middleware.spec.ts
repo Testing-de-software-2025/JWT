@@ -5,13 +5,11 @@ import { ExecutionContext } from '@nestjs/common';
 describe('AuthGuard', () => {
   let guard: AuthGuard;
   let jwtService: JwtService;
-
   beforeEach(() => {
     jwtService = new JwtService();
     // Se omite usersService y reflector para simplificar el test
     guard = new AuthGuard(jwtService, null as any, null as any);
   });
-
   function createMockContext(headers: any): ExecutionContext {
     return {
       switchToHttp: () => ({
@@ -19,7 +17,6 @@ describe('AuthGuard', () => {
       })
     } as any;
   }
-
   it('debería permitir la request si el token es válido', async () => {
     const payload = { email: 'test@example.com' };
     const token = jwtService.generateToken(payload);
@@ -27,8 +24,6 @@ describe('AuthGuard', () => {
     // Si el método es async, usa await
     await expect(guard.canActivate(context)).resolves.toBe(true);
   });
-
-
   it('debería lanzar error si el token es inválido', async () => {
     const context = createMockContext({ authorization: 'Bearer token_invalido' });
     await expect(guard.canActivate(context)).rejects.toThrow();
@@ -38,6 +33,4 @@ describe('AuthGuard', () => {
     const context = createMockContext({});
     await expect(guard.canActivate(context)).rejects.toThrow();
   });
-
-
 });
