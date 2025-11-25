@@ -19,10 +19,10 @@ export class UserEntity extends BaseEntity implements UserI {
   @JoinTable()
     roles: RoleEntity[];
 
-  @Column({ default: 0 })
+ @Column({ default: 0 }) 
   failedLoginAttempts: number;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'timestamp', nullable: true }) 
   lockedUntil: Date | null;
 
   get permissionCodes(): string[] {
