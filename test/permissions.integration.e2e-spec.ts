@@ -1,9 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { DataSource } from 'typeorm';
-import { PermissionEntity } from '../src/entities/permission.entity';
 
 describe('Permissions integration (e2e)', () => {
   let app: INestApplication;
@@ -21,8 +20,8 @@ describe('Permissions integration (e2e)', () => {
     httpServer = app.getHttpServer();
     dataSource = app.get(DataSource);
 
-  // Limpiar usando TRUNCATE CASCADE para Postgres y reiniciar identities
-  await dataSource.query('TRUNCATE TABLE "permissions" RESTART IDENTITY CASCADE');
+    // Limpiar usando TRUNCATE CASCADE para Postgres y reiniciar identities
+    await dataSource.query('TRUNCATE TABLE "permissions" RESTART IDENTITY CASCADE');
   }, 20000);
 
   afterAll(async () => {
