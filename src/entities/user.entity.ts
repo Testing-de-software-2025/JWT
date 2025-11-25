@@ -19,6 +19,12 @@ export class UserEntity extends BaseEntity implements UserI {
   @JoinTable()
     roles: RoleEntity[];
 
+  @Column({ default: 0 })
+  failedLoginAttempts: number;
+
+  @Column({ type: 'timestamp', nullable: true })
+  lockedUntil: Date | null;
+
   get permissionCodes(): string[] {
     return this.roles?.flatMap(role => role.permissions.map(permission => permission.name)) || [];
   }
